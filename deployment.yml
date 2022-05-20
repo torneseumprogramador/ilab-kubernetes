@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ilab-java-jwt-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ilab-java-jwt
+  template:
+    metadata:
+      name: ilab-java-jwt
+      labels:
+        app: ilab-java-jwt
+    spec:
+      containers:
+        - name: java-jwt
+          image: didox/java_jwt:latest
+          env:
+            - name: USER
+              valueFrom:
+                configMapKeyRef:
+                  name: remote-postgresql-configmap
+                  key: USER
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-postgre-secret
+                  key: POSTGRE_PASSWORD
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: remote-postgresql-configmap
+                  key: DATABASE_URL
+          ports:
+            - containerPort: 8080
+
